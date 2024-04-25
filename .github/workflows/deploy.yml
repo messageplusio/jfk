@@ -36,3 +36,5 @@ jobs:
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: notifix
             location: 'France Central'
+            ports: 8080
+            protocol: HTTP
