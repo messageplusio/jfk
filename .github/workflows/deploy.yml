@@ -23,7 +23,6 @@ jobs:
         - run: |
             docker build . -t uatfrancecentral.azurecr.io/notifix:${{ github.sha }}
             docker push uatfrancecentral.azurecr.io/notifix:${{ github.sha }}
-
         - name: 'Deploy to Azure Container Instances'
           uses: 'azure/aci-deploy@v1'
           with:
@@ -37,4 +36,4 @@ jobs:
             name: notifix
             location: 'France Central'
             ports: 8080
-            protocol: HTTP
+            protocol: TCP
