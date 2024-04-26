@@ -1,10 +1,10 @@
 
 on: [push]
 name: Build and Deploy to Azure Container Instances
+
 jobs:
-    build-and-deploy:
+    build:
         runs-on: ubuntu-latest
-        environment: uat
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
@@ -22,6 +22,10 @@ jobs:
         - run: |
             docker build . -t uatfrancecentral.azurecr.io/notifix:${{ github.sha }}
             docker push uatfrancecentral.azurecr.io/notifix:${{ github.sha }}
+    deploy:
+      runs-on: ubuntu-latest
+      environment: uat
+      steps:
         - name: 'Deploy to Azure Container Instances'
           uses: 'azure/aci-deploy@v1'
           with:
@@ -29,7 +33,6 @@ jobs:
             dns-name-label: notifix
             image: uatfrancecentral.azurecr.io/notifix:${{ github.sha }}
             cpu: 1   #Optional
-            memory: 0.1   #Optional
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: notifix
