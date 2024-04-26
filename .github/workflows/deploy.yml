@@ -25,6 +25,7 @@ jobs:
     deploy:
       runs-on: ubuntu-latest
       environment: uat
+      needs: build
       steps:
         - name: 'Deploy to Azure Container Instances'
           uses: 'azure/aci-deploy@v1'
