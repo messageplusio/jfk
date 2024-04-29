@@ -7,6 +7,7 @@ import (
 	"time"
 
 	_ "embed"
+	"log/slog"
 
 	"github.com/google/uuid"
 )
@@ -22,6 +23,8 @@ type Joke struct {
 var Jokes []Joke
 
 func init() {
+	slog.Info("Loading jokes")
+	defer slog.Info("Jokes loaded")
 	// Load jokes from the embedded file
 	// Split the file into lines
 	// Each joke has two lines
@@ -40,6 +43,8 @@ func init() {
 var indexHTML string
 
 func main() {
+	slog.Info("Starting the server")
+	defer slog.Info("Server stopped")
 	// Serve the HTML page
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		joke := Jokes[time.Now().Second()%len(Jokes)]
