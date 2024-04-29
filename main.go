@@ -27,10 +27,12 @@ func init() {
 	// Each joke has two lines
 	lines := strings.Split(jokesText, "\n")
 	for i := 0; i < len(lines); i += 2 {
-		Jokes = append(Jokes, Joke{
-			Part1: lines[i],
-			Part2: lines[i+1],
-		})
+		if len(lines) > i+1 {
+			Jokes = append(Jokes, Joke{
+				Part1: lines[i],
+				Part2: lines[i+1],
+			})
+		}
 	}
 }
 
