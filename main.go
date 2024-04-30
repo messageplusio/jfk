@@ -47,19 +47,19 @@ func main() {
 	slog.Info("Starting the server")
 	defer slog.Info("Server stopped")
 	// Serve the HTML page
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/jokes", func(w http.ResponseWriter, r *http.Request) {
 		joke := Jokes[time.Now().Second()%len(Jokes)]
 		fmt.Fprintf(w, indexHTML, uuid.New().String(), fmt.Sprintf("%s<br>%s", joke.Part1, joke.Part2))
 	})
 
 	// Endpoint to fetch the current time
-	http.HandleFunc("/joke", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Get the current time
 		joke := Jokes[time.Now().Second()%len(Jokes)]
 		// Print jokes in two lines
 		fmt.Fprintf(w, "%s<br>%s", joke.Part1, joke.Part2)
 	})
-	http.HandleFunc(".well-known/acme-challenge/FMkLJ_aZgnGGYdcSzbFCqtWr2XAgz9ETwzVEo7xLKxs", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/.well-known/acme-challenge/FMkLJ_aZgnGGYdcSzbFCqtWr2XAgz9ETwzVEo7xLKxs", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "FMkLJ_aZgnGGYdcSzbFCqtWr2XAgz9ETwzVEo7xLKxs.d8WdiVqQsDwkW4ZhxpaCsuZCL8-cna9LHpgrNZCR0eM")
 	})
 	// Start the server
