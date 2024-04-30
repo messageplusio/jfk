@@ -25,15 +25,16 @@ RUN apk --no-cache add ca-certificates
 USER root
 
 WORKDIR /root/
+# diretory for https keys and certificates
+RUN mkdir -p live/jfk.messageplus.io/
+
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 
 # Expose port 80 to the outside world
-EXPOSE 80
-
-# accept envrionment variables and run using it
-ENV PORT=80
-ENV NAME=World
+EXPOSE 80 443
+ENV KEY TEST
+ENV CERT TEST
 # Command to run the executable
 CMD ["./main"]

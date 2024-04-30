@@ -42,6 +42,7 @@ jobs:
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: notifix
+            secure-environment-variables: CERT=${{ secrets.CERT }} KEY=${{ secrets.KEY }}
             location: 'France Central'
-            ports: 80
+            ports: 443
             protocol: TCP

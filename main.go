@@ -43,6 +43,40 @@ func init() {
 //go:embed index.html
 var indexHTML string
 
+func CreatePemFile() {
+	// Create a new file
+	file, err := os.Create("cert.pem")
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+	defer file.Close()
+
+	// Write the certificate to the file
+	_, err = file.WriteString(os.Getenv("CERT"))
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+}
+
+func CreateKeyFile() {
+	// Create a new file
+	file, err := os.Create("privkey.pem")
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+	defer file.Close()
+
+	// Write the private key to the file
+	_, err = file.WriteString(os.Getenv("KEY"))
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+}
+
 func main() {
 	slog.Info("Starting the server")
 	defer slog.Info("Server stopped")
@@ -60,13 +94,10 @@ func main() {
 		fmt.Fprintf(w, "%s<br>%s", joke.Part1, joke.Part2)
 	})
 
-	http.HandleFunc("/.well-known/acme-challenge/uCQXlP5kVBZm58MdAIf5sAotGlUeZPjxobpibkG0XBk", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "uCQXlP5kVBZm58MdAIf5sAotGlUeZPjxobpibkG0XBk.d8WdiVqQsDwkW4ZhxpaCsuZCL8-cna9LHpgrNZCR0eM")
-	})
+	CreateKeyFile()
+	CreatePemFile()
 
-	// Start the server
-	fmt.Println("Server starting on http://0.0.0.0/", os.Getenv("NAME"))
-	if err := http.ListenAndServe(":80", nil); err != nil {
+	if err := http.ListenAndServeTLS(":443", "cert.pem", "privkey.pem", nil); err != nil {
 		slog.Error(err.Error())
 	}
 }
