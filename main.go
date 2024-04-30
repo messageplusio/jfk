@@ -59,7 +59,9 @@ func main() {
 		// Print jokes in two lines
 		fmt.Fprintf(w, "%s<br>%s", joke.Part1, joke.Part2)
 	})
-
+	http.HandleFunc(".well-known/acme-challenge/FMkLJ_aZgnGGYdcSzbFCqtWr2XAgz9ETwzVEo7xLKxs", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "FMkLJ_aZgnGGYdcSzbFCqtWr2XAgz9ETwzVEo7xLKxs.d8WdiVqQsDwkW4ZhxpaCsuZCL8-cna9LHpgrNZCR0eM")
+	})
 	// Start the server
 	fmt.Println("Server starting on http://0.0.0.0/", os.Getenv("NAME"))
 	if err := http.ListenAndServe(":80", nil); err != nil {
