@@ -32,10 +32,10 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 
 # Expose port 8080 to the outside world
-EXPOSE 8080
+EXPOSE 80
 
 # accept envrionment variables and run using it
-ENV PORT=8080
+ENV PORT=80
 ENV NAME=World
 # Command to run the executable
 CMD ["./main"]

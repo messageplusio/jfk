@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -60,6 +61,8 @@ func main() {
 	})
 
 	// Start the server
-	fmt.Println("Server starting on http://0.0.0.0:8080/")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("Server starting on http://0.0.0.0/", os.Getenv("NAME"))
+	if err := http.ListenAndServe(":80", nil); err != nil {
+		slog.Error(err.Error())
+	}
 }
