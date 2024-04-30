@@ -22,16 +22,14 @@ FROM alpine:3.15
 # Add ca-certificates in case you need to make calls to HTTPS endpoints
 RUN apk --no-cache add ca-certificates
 
-# Create a new user to run the application
-RUN adduser -D appuser
-USER appuser
+USER root
 
 WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 
-# Expose port 8080 to the outside world
+# Expose port 80 to the outside world
 EXPOSE 80
 
 # accept envrionment variables and run using it
