@@ -1,5 +1,5 @@
 
-# 🎉 JFK (Just For Kicks) Service 🚀
+# 🎉 JFK (Just For Kicks) 🚀
 
 [![Build and Deploy to Azure Container Instances](https://github.com/messageplusio/notifix/actions/workflows/deploy.yml/badge.svg)](https://github.com/messageplusio/notifix/actions/workflows/deploy.yml)
 
