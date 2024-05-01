@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"os"
@@ -43,38 +44,35 @@ func init() {
 //go:embed index.html
 var indexHTML string
 
-func CreatePemFile() {
+func CreateFileWithBase64(fileName string, encodedData string) error {
 	// Create a new file
-	file, err := os.Create("cert.pem")
+	file, err := os.Create(fileName)
 	if err != nil {
 		slog.Error(err.Error())
-		return
+		return err
 	}
 	defer file.Close()
 
-	// Write the certificate to the file
-	_, err = file.WriteString(os.Getenv("CERT"))
+	decodedData, err := base64.StdEncoding.DecodeString(encodedData)
 	if err != nil {
 		slog.Error(err.Error())
-		return
+		return err
 	}
+	// Write the certificate to the file
+	_, err = file.Write(decodedData)
+	if err != nil {
+		slog.Error(err.Error())
+		return err
+	}
+	return nil
 }
 
-func CreateKeyFile() {
-	// Create a new file
-	file, err := os.Create("privkey.pem")
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
-	defer file.Close()
+func CreatePemFile() error {
+	return CreateFileWithBase64("cert.pem", os.Getenv("CERT"))
+}
 
-	// Write the private key to the file
-	_, err = file.WriteString(os.Getenv("KEY"))
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
+func CreateKeyFile() error {
+	return CreateFileWithBase64("privkey.pem", os.Getenv("KEY"))
 }
 
 func main() {
@@ -94,8 +92,13 @@ func main() {
 		fmt.Fprintf(w, "%s<br>%s", joke.Part1, joke.Part2)
 	})
 
-	CreateKeyFile()
-	CreatePemFile()
+	if err := CreateKeyFile(); err != nil {
+		slog.Error(err.Error())
+
+	}
+	if err := CreatePemFile(); err != nil {
+		slog.Error(err.Error())
+	}
 
 	if err := http.ListenAndServeTLS(":443", "cert.pem", "privkey.pem", nil); err != nil {
 		slog.Error(err.Error())
