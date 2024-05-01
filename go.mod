@@ -1,4 +1,4 @@
-module github.com/messageplusio/notifix
+module github.com/messageplusio/jfk
 
 go 1.22.2
 
