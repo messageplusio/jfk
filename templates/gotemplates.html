@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTMX with Go</title>
+    <title>Render Go Template</title>
     <script src="https://unpkg.com/htmx.org@1.6.1"></script>
     <style>
         body {
@@ -88,7 +88,7 @@
     </style>
 </head>
 <body>
-    <h1>HTMX with Go</h1>
+    <h1>Render Go Template</h1>
     <div id="error-banner" class="error-banner"></div>
     <div class="container">
         <div class="left">
@@ -106,7 +106,6 @@
         </div>
     </div>
     <script>
-        
         document.body.addEventListener('htmx:responseError', function(event) {
             const errorBanner = document.getElementById('error-banner');
             errorBanner.textContent = event.detail.xhr.responseText;
