@@ -17,13 +17,13 @@ To get this server up and running:
 1. Clone the repository:
 
 ```shell
-git clone https://github.com/messageplusio/notifix.git
+git clone https://github.com/messageplusio/jfk.git
 ```
 
 2.Enter the project directory:
 
 ```shell
-cd notifix
+cd jfk
 ```
 
 3.Deploy using GitHub Actions:
