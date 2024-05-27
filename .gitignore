@@ -1,2 +1,4 @@
 env
+cert.pem
+privkey.pem
 live/
