@@ -1,8 +1,11 @@
 package main
 
 import (
+	"embed"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"os"
 	"strings"
@@ -41,8 +44,8 @@ func init() {
 	}
 }
 
-//go:embed index.html
-var indexHTML string
+//go:embed templates/*
+var htmlroot embed.FS
 
 func CreateFileWithBase64(fileName string, encodedData string) error {
 	// Create a new file
@@ -81,8 +84,25 @@ func main() {
 	// Serve the HTML page
 	http.HandleFunc("/jokes", func(w http.ResponseWriter, r *http.Request) {
 		joke := Jokes[time.Now().Second()%len(Jokes)]
-		fmt.Fprintf(w, indexHTML, uuid.New().String(), fmt.Sprintf("%s<br>%s", joke.Part1, joke.Part2))
+		jokes, err := htmlroot.ReadFile("templates/jokes.html")
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+		fmt.Fprintf(w, string(jokes), uuid.New().String(), fmt.Sprintf("%s<br>%s", joke.Part1, joke.Part2))
 	})
+
+	// Serve the HTML page
+	http.HandleFunc("/gotemplate", func(w http.ResponseWriter, r *http.Request) {
+		gotemplates, err := htmlroot.ReadFile("templates/gotemplates.html")
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+		fmt.Fprint(w, string(gotemplates))
+	})
+
+	http.HandleFunc("/render", handleRender)
 
 	// Endpoint to fetch the current time
 	http.HandleFunc("/joke", func(w http.ResponseWriter, r *http.Request) {
@@ -102,5 +122,34 @@ func main() {
 
 	if err := http.ListenAndServeTLS(":443", "cert.pem", "privkey.pem", nil); err != nil {
 		slog.Error(err.Error())
+	}
+}
+
+func handleRender(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	templateStr := r.FormValue("template")
+	jsonStr := r.FormValue("jsonData")
+
+	var data map[string]interface{}
+	err := json.Unmarshal([]byte(jsonStr), &data)
+	if err != nil {
+		http.Error(w, "Invalid JSON data", http.StatusBadRequest)
+		return
+	}
+
+	tmpl, err := template.New("result").Parse(templateStr)
+	if err != nil {
+		http.Error(w, "Invalid template", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, "Error executing template", http.StatusInternalServerError)
 	}
 }
