@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTMX with Go</title>
+    <title>Render Go Template</title>
     <script src="https://unpkg.com/htmx.org@1.6.1"></script>
     <style>
         body {
@@ -74,17 +74,29 @@
             min-height: 150px;
             white-space: pre-wrap; /* Preserves formatting */
         }
+        .error-banner {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 80%;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <h1> Render Go Template </h1>
+    <h1>Render Go Template</h1>
+    <div id="error-banner" class="error-banner"></div>
     <div class="container">
         <div class="left">
             <form id="templateForm" hx-post="/render" hx-trigger="submit" hx-target="#result" hx-swap="innerHTML">
                 <label for="template">Go Template:</label>
                 <textarea id="template" name="template">{{.Title}} - {{.Message}}</textarea>
                 <label for="jsonData">JSON Data:</label>
-                <textarea id="jsonData" name="jsonData">{"title": "Hello", "message": "World!"}</textarea>
+                <textarea id="jsonData" name="jsonData">{"Title": "Hello", "Message": "World!"}</textarea>
                 <button type="submit">Render</button>
             </form>
         </div>
@@ -93,5 +105,17 @@
             <div id="result" class="output"></div>
         </div>
     </div>
+    <script>
+        document.body.addEventListener('htmx:responseError', function(event) {
+            const errorBanner = document.getElementById('error-banner');
+            errorBanner.textContent = event.detail.xhr.responseText;
+            errorBanner.style.display = 'block';
+        });
+
+        document.body.addEventListener('htmx:beforeRequest', function(event) {
+            const errorBanner = document.getElementById('error-banner');
+            errorBanner.style.display = 'none';
+        });
+    </script>
 </body>
 </html>

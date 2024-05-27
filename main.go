@@ -13,8 +13,6 @@ import (
 
 	_ "embed"
 	"log/slog"
-
-	"github.com/google/uuid"
 )
 
 //go:embed jokes.txt
@@ -82,35 +80,9 @@ func main() {
 	slog.Info("Starting the server")
 	defer slog.Info("Server stopped")
 	// Serve the HTML page
-	http.HandleFunc("/jokes", func(w http.ResponseWriter, r *http.Request) {
-		joke := Jokes[time.Now().Second()%len(Jokes)]
-		jokes, err := htmlroot.ReadFile("templates/jokes.html")
-		if err != nil {
-			slog.Error(err.Error())
-			return
-		}
-		fmt.Fprintf(w, string(jokes), uuid.New().String(), fmt.Sprintf("%s<br>%s", joke.Part1, joke.Part2))
-	})
-
-	// Serve the HTML page
-	http.HandleFunc("/gotemplate", func(w http.ResponseWriter, r *http.Request) {
-		gotemplates, err := htmlroot.ReadFile("templates/gotemplates.html")
-		if err != nil {
-			slog.Error(err.Error())
-			return
-		}
-		fmt.Fprint(w, string(gotemplates))
-	})
-
-	http.HandleFunc("/render", handleRender)
-
-	// Endpoint to fetch the current time
-	http.HandleFunc("/joke", func(w http.ResponseWriter, r *http.Request) {
-		// Get the current time
-		joke := Jokes[time.Now().Second()%len(Jokes)]
-		// Print jokes in two lines
-		fmt.Fprintf(w, "%s<br>%s", joke.Part1, joke.Part2)
-	})
+	http.HandleFunc("/", serveFiles)
+	http.HandleFunc("/render", handleTemplateRender)
+	http.HandleFunc("/joke", handleJoke)
 
 	if err := CreateKeyFile(); err != nil {
 		slog.Error(err.Error())
@@ -125,7 +97,7 @@ func main() {
 	}
 }
 
-func handleRender(w http.ResponseWriter, r *http.Request) {
+func handleTemplateRender(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -152,4 +124,20 @@ func handleRender(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error executing template", http.StatusInternalServerError)
 	}
+}
+
+func handleJoke(w http.ResponseWriter, r *http.Request) {
+	// Get the current time
+	joke := Jokes[time.Now().Second()%len(Jokes)]
+	// Print jokes in two lines
+	w.Header().Set("Content-Type", "text/html")
+	fmt.Fprintf(w, "%s<br>%s", joke.Part1, joke.Part2)
+}
+
+func serveFiles(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/" || r.URL.Path == "" {
+		http.ServeFileFS(w, r, htmlroot, "templates/index.html")
+		return
+	}
+	http.ServeFileFS(w, r, htmlroot, "templates/"+r.URL.Path[1:]+".html")
 }
