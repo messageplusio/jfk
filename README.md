@@ -10,6 +10,12 @@ Welcome to JFK, a simple Go-based HTTP server that's as easygoing as a casual ch
 Simple HTTP server: Ready to handle basic requests.
 Automated deployment: Uses GitHub Actions to deploy to Azure Container Instances seamlessly.
 
+
+## Endpoints
+
+- Dad Jokes
+- Go template engine
+
 ## Getting Started
 
 To get this server up and running:
